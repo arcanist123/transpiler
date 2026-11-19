@@ -67,7 +67,7 @@ and `ZTRANSP_NUMC` (cases 1-2), both in `$TMP`, run via `SAP(action="rfc", op "r
 Check states with:
 
 ```sh
-for n in 2143 2145 2147 2149 2151 2141 1964 2014; do gh pr view $n --repo abaplint/transpiler --json number,state,mergeable,reviewDecision --jq '"#\(.number) \(.state) \(.mergeable) \(.reviewDecision)"'; done
+for n in 2143 2145 2147 2149 2151 2141 2152 2153 1964 2014; do gh pr view $n --repo abaplint/transpiler --json number,state,mergeable,reviewDecision --jq '"#\(.number) \(.state) \(.mergeable) \(.reviewDecision)"'; done
 ```
 
 ### Our PRs
@@ -204,7 +204,7 @@ Fix notes:
 | Fix | Files | Conflict |
 |---|---|---|
 | #420 | `runtime/src/statements/shift.ts` | none - **PR #2152** open (`shift-byte-mode-not-bytelike`), SAP-verified (`ZTRANSP_420`) |
-| #419 | `runtime/src/types/structure.ts` `set` | none - fixed on local branch `structure-move-char-fragments` (6a4fa007), SAP-verified (`ZTRANSP_419`, test snippet `ZTRANSP_419T`), perf suite flat; pushed to the fork, **PR not opened yet** (text in scratchpad `pr419.md`). Gap: raw non-digits into `n` inside a fragment (needs `numc.ts`, after #2143/#2145) |
+| #419 | `runtime/src/types/structure.ts` `set` | none - fixed on local branch `structure-move-char-fragments` (6a4fa007), SAP-verified (`ZTRANSP_419`, test snippet `ZTRANSP_419T`), perf suite flat; **PR #2153** open. Gap: raw non-digits into `n` inside a fragment (needs `numc.ts`, after #2143/#2145) |
 | #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) |
 | #419, then #427 (separate PRs; same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
 | #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
@@ -214,9 +214,9 @@ Fix notes:
 | Numbers -> n | `types/numc.ts` | our #2143/#2145, #1955 - wait |
 | #2042 + F2 | `types/integer8.ts`, operators | #1964, #2014, #2013, #1962, #1955 - wait |
 
-Order: #420 (PR #2152), #419 (pushed), #2140, then #1939, #2139; #2136 after #2141.
+Order: #420 (PR #2152), #419 (PR #2153), #2140, then #1939, #2139; #2136 after #2141.
 
-**#427 waits until the #419 PR is merged.** Both change `Structure.set` in
+**#427 waits until the #419 PR (#2153) is merged.** Both change `Structure.set` in
 `types/structure.ts` (#427 cases 3-4 are in `setCharacter`, next to the #419 fragment move).
 Start #427 from `upstream/main` once #419 is in. Case 5 (`WRITE` of a ref ->
 `OBJECTS_NOT_CHARCONV`, `statements/write.ts`) could go first on its own, but keep #427
@@ -233,5 +233,5 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 3. Plan item 7: #2042 overflow, after #2014's direction is settled.
 4. Decide on "Numbers -> n" above.
 5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
-   re-tested 2026-11-19 and all still reproduce. #420 -> PR #2152; #419 pushed (open the
-   PR); #427 after #419 is merged; meanwhile #2140.
+   re-tested 2026-11-19 and all still reproduce. #420 -> PR #2152; #419 -> PR #2153;
+   #427 after #2153 is merged; meanwhile #2140.
