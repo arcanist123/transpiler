@@ -59,18 +59,92 @@ expectation was checked on SAP.
 
 Order: 1-4 (quick, low risk), 5 (coordination), 6, then 7.
 
-### Status (2026-11-19)
+## Merge watch
 
-Verified on A4H with `ZTRANSP_INT8_PR` (cases 1-7) and `ZTRANSP_NUMC` (cases 1-2), run via
-`SAP(action="rfc", op "run")`.
+Expectations of every PR below were verified on A4H with `ZTRANSP_INT8_PR` (cases 1-7)
+and `ZTRANSP_NUMC` (cases 1-2), both in `$TMP`, run via `SAP(action="rfc", op "run")`.
 
-| Finding | Issue | PR | Branch |
+Check states with:
+
+```sh
+for n in 2143 2145 2147 2149 2151 2141 1964 2014; do gh pr view $n --repo abaplint/transpiler --json number,state,mergeable,reviewDecision --jq '"#\(.number) \(.state) \(.mergeable) \(.reviewDecision)"'; done
+```
+
+### Our PRs
+
+| Finding | Issue | PR | Branch | State 2026-11-19 | Notes |
+|---|---|---|---|---|---|
+| F7 int8 -> n crash | #2142 | #2143 | `int8-to-numc` | open, mergeable, CI green (1 running) | |
+| new: text -> n loses digits above 2^53, so n -> int8 inexact | #2144 | #2145 | `numc-to-int8` | open, mergeable, CI green (1 running) | also touches `numc.ts`, like #2143, different lines |
+| F8 nmax/nmin with large int8 | #2146 | #2147 | `int8-nmax-nmin` | open, mergeable, CI green (1 running) | |
+| F9 int8 vs x (crash + wrong `=`/`<`/`>`) | #2148 | #2149 | `int8-compare-hex` | open, mergeable, CI green (1 running) | |
+| F10 VALUE literal above 2^53 (int8 and p) | #2150 | #2151 | `int8-value-literal` | open, mergeable, CI green (1 running) | transpiler side, changes generated code for large literals only |
+| ASSIGN COMPONENT type check (#417) | - | #2141 | `fix-assign-component-type` | open, mergeable | not int8, listed to keep track |
+
+### What to watch while they merge
+
+- **Test-file conflicts:** #2143, #2145, #2149 and #2151 all append a test at the end of
+  `test/types/integer8.ts`. After the first merges, the others conflict there: rebase on
+  `upstream/main` and keep both tests.
+- **`numc.ts`:** #2143 (non-character path) and #2145 (text path) edit `Numc.set`
+  in different branches of the same function; git may still flag a conflict. Also the
+  local `numeric-to-numc` commit edits the same function - rebase it after both merge.
+- **Combined effect:** `DATA n20 TYPE n LENGTH 20 VALUE 12345678901234567891` is exact
+  only once both #2145 (text -> n) and #2151 (VALUE emitted as text) are merged.
+- **Review feedback:** larshp asked #1964 for ABAP-based unit tests; ours are ABAP
+  snippets in the integration tests, which should satisfy the same expectation.
+- **After each merge:** pull `upstream/main`, rerun the int8 probe locally (scratchpad
+  `run.js` against `ZTRANSP_INT8` source) and tick the finding off here.
+
+### Related PRs of others
+
+| PR | Topic | State 2026-11-19 | Why it matters |
 |---|---|---|---|
-| F7 int8 -> n crash | #2142 | #2143 | `int8-to-numc` |
-| new: text -> n loses digits above 2^53, so n -> int8 inexact | #2144 | #2145 | `numc-to-int8` |
-| F8 nmax/nmin with large int8 | #2146 | #2147 | `int8-nmax-nmin` |
-| F9 int8 vs x (crash + wrong `=`/`<`/`>`) | #2148 | #2149 | `int8-compare-hex` |
-| F10 VALUE literal above 2^53 (int8 and p) | #2150 | #2151 | `int8-value-literal` |
-| new: i/p/f/decfloat34 -> n keeps sign, truncates (SAP: abs, round half away from zero) | not filed | local commit 2a68dbdb | `numeric-to-numc` (not pushed) |
+| #1964 (oisee) | int8 <-> x/xstring byte layout, fixes #1963, #1673, F6 | open, CONFLICTING (with #2041 in `xstring.ts`), changes requested | plan item 5: comment with SAP 816 results, offer rebase + ABAP tests |
+| #2014 (oblomov-dev) | `i` range check, overflow raises | open | covers F3 (`i = int8` overflow); plan item 7 should mirror its design |
+| #1955 | `i` overflow raises | open | overlaps #2014 |
 
-Next: 5 (comment on #1964), 6 (#1939), 7 (#2042).
+## Not filed / to decide
+
+1. **Numbers -> n** (`i`, `p`, `f`, `decfloat34`): transpiler keeps the minus sign and
+   truncates; SAP stores the absolute value rounded half away from zero (`-3.7` ->
+   `0000000004`). Fixed and tested in local commit `2a68dbdb` on branch `numeric-to-numc`
+   (not pushed). Issue text ready in scratchpad `issue_b.md` (copy below if lost). Opening it
+   was blocked by the permission check - decide whether to file.
+2. **int8 vs xstring comparison** - not covered by #2149, SAP behaviour not checked.
+3. **x longer than 8 bytes vs int8** - depends on #1963 / #1964.
+4. **8-byte hex through `parse( )`** - `Math.pow` two's complement loses sign and
+   precision for `x LENGTH 8` anywhere a number is used, e.g. `x8` vs `i`, `p`, `f`.
+   Not checked on SAP.
+5. **Overflow tests (#2042):** the test environment has no `CX_SY_*` classes, so
+   `CATCH cx_sy_conversion_overflow` fails the syntax check in `integer8.ts`; the overflow
+   PR must declare the classes in the test or check the error differently.
+6. **Not int8, noted earlier:** `int8_max -> f -> p` gives `...808.00` vs SAP
+   `...800.00` (f -> p rounding); `WRITE TO` sign and thousands separators.
+
+<details><summary>issue_b.md (numbers -> n)</summary>
+
+Title: i, p, f and decfloat34 to n: minus sign kept and decimals truncated
+
+| source | real system (ABAP 816) | transpiler |
+|---|---|---|
+| `i` `-3` | `0000000003` | `00000000-3` |
+| `p` `-3.70` | `0000000004` | `00000000-3` |
+| `p` `3.50` | `0000000004` | `0000000003` |
+| `p` `-3.50` | `0000000004` | `00000000-3` |
+| `p` `3.49` | `0000000003` | `0000000003` |
+| `f` `-3.7` | `0000000004` | `00000000-3` |
+| `f` `3.5` | `0000000004` | `0000000003` |
+| `decfloat34` `-3.7` | `0000000004` | `00000000-3` |
+| `decfloat34` `3.5` | `0000000004` | `0000000003` |
+
+Cause: `Numc.set` uses `Math.trunc( )` and keeps the sign; `p` arrives as a double through
+`get()`, `decfloat34` as text with a decimal comma.
+</details>
+
+## Next
+
+1. Plan item 5: comment on #1964 (SAP 816 results; offer rebase onto #2041 and ABAP tests).
+2. Plan item 6: #1939 sign placement (int8 -> string/c).
+3. Plan item 7: #2042 overflow, after #2014's direction is settled.
+4. Decide on "Numbers -> n" above.
