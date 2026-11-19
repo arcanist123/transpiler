@@ -208,7 +208,7 @@ Fix notes:
 | #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) - **PR #2154** open (`sort-empty-key`), SAP-verified (`ZTRANSP_2140`) |
 | #419, then #427 (separate PRs; same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
 | #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
-| #1939 int8 -> string/c | `types/character.ts`, `types/string.ts` | low: #1955 edits `getOffset` + line-1 import |
+| #1939 int8 -> string/c | `types/character.ts`, `types/string.ts`, test in `test/types/integer8.ts` (near the top, not at the end) | none in practice: trial merge (`git merge-tree`) clean with #2143/#2145/#2149/#2151; #1955 already conflicts with main in 4 other files, ours adds none. Fixed on local branch `int8-to-text-sign` (4cc8a8ef), SAP-verified (`ZTRANSP_1939`), not pushed; PR text in scratchpad `pr1939.md` |
 | #2139 AS TEXT | runtime `sort.ts` (free), transpiler `sort.ts` + `for_groups.ts` | low: #2080 changes one `findVariable` line in each |
 | #2136 | `statements/assign.ts` | our #2141 - stack on it or wait |
 | Numbers -> n | `types/numc.ts` | our #2143/#2145, #1955 - wait |
@@ -229,7 +229,8 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 ## Next
 
 1. Plan item 5: comment on #1964 (SAP 816 results; offer rebase onto #2041 and ABAP tests).
-2. Plan item 6: #1939 sign placement (int8 -> string/c).
+2. Plan item 6: #1939 sign placement (int8 -> string/c) - fixed locally, branch
+   `int8-to-text-sign`, not pushed.
 3. Plan item 7: #2042 overflow, after #2014's direction is settled.
 4. Decide on "Numbers -> n" above.
 5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
