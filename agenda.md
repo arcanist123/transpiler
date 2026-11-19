@@ -203,7 +203,7 @@ Fix notes:
 
 | Fix | Files | Conflict |
 |---|---|---|
-| #420 | `runtime/src/statements/shift.ts` | none |
+| #420 | `runtime/src/statements/shift.ts` | none - fixed on local branch `shift-byte-mode-not-bytelike` (e8549395), SAP-verified (`ZTRANSP_420` cases 1-5), not pushed yet |
 | #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) |
 | #419 + #427 (one PR, same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
 | #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
