@@ -58,3 +58,19 @@ expectation was checked on SAP.
    the hot path, so it needs the performance run. F3 should come with #2014; verify after.
 
 Order: 1-4 (quick, low risk), 5 (coordination), 6, then 7.
+
+### Status (2026-11-19)
+
+Verified on A4H with `ZTRANSP_INT8_PR` (cases 1-7) and `ZTRANSP_NUMC` (cases 1-2), run via
+`SAP(action="rfc", op "run")`.
+
+| Finding | Issue | PR | Branch |
+|---|---|---|---|
+| F7 int8 -> n crash | #2142 | #2143 | `int8-to-numc` |
+| new: text -> n loses digits above 2^53, so n -> int8 inexact | #2144 | #2145 | `numc-to-int8` |
+| F8 nmax/nmin with large int8 | #2146 | #2147 | `int8-nmax-nmin` |
+| F9 int8 vs x (crash + wrong `=`/`<`/`>`) | #2148 | #2149 | `int8-compare-hex` |
+| F10 VALUE literal above 2^53 (int8 and p) | #2150 | #2151 | `int8-value-literal` |
+| new: i/p/f/decfloat34 -> n keeps sign, truncates (SAP: abs, round half away from zero) | not filed | local commit 2a68dbdb | `numeric-to-numc` (not pushed) |
+
+Next: 5 (comment on #1964), 6 (#1939), 7 (#2042).
