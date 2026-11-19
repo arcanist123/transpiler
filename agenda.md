@@ -199,7 +199,21 @@ Fix notes:
   not `x`/`xstring`. (Today it treats the text as hex, so 1 byte = 2 characters and
   `'abc'` becomes `'c'`.)
 
-Order: #419, #427, #420 (2021), then #2136, #2140, #2139.
+#### Conflict map (checked 2026-11-19 against the files of all 45 open PRs)
+
+| Fix | Files | Conflict |
+|---|---|---|
+| #420 | `runtime/src/statements/shift.ts` | none |
+| #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) |
+| #419 + #427 (one PR, same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
+| #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
+| #1939 int8 -> string/c | `types/character.ts`, `types/string.ts` | low: #1955 edits `getOffset` + line-1 import |
+| #2139 AS TEXT | runtime `sort.ts` (free), transpiler `sort.ts` + `for_groups.ts` | low: #2080 changes one `findVariable` line in each |
+| #2136 | `statements/assign.ts` | our #2141 - stack on it or wait |
+| Numbers -> n | `types/numc.ts` | our #2143/#2145, #1955 - wait |
+| #2042 + F2 | `types/integer8.ts`, operators | #1964, #2014, #2013, #1962, #1955 - wait |
+
+Order: #420 (in progress), #419 + #427, #2140, then #1939, #2139; #2136 after #2141.
 
 ### Closed
 
