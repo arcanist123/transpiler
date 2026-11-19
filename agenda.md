@@ -205,7 +205,7 @@ Fix notes:
 |---|---|---|
 | #420 | `runtime/src/statements/shift.ts` | none - **PR #2152** open (`shift-byte-mode-not-bytelike`), SAP-verified (`ZTRANSP_420`) |
 | #419 | `runtime/src/types/structure.ts` `set` | none - fixed on local branch `structure-move-char-fragments` (6a4fa007), SAP-verified (`ZTRANSP_419`, test snippet `ZTRANSP_419T`), perf suite flat; **PR #2153** open. Gap: raw non-digits into `n` inside a fragment (needs `numc.ts`, after #2143/#2145) |
-| #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) |
+| #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) - fixed on local branch `sort-empty-key`, SAP-verified (`ZTRANSP_2140`), not pushed; PR text in scratchpad `pr2140.md` |
 | #419, then #427 (separate PRs; same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
 | #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
 | #1939 int8 -> string/c | `types/character.ts`, `types/string.ts` | low: #1955 edits `getOffset` + line-1 import |
