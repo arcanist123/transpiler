@@ -67,7 +67,7 @@ and `ZTRANSP_NUMC` (cases 1-2), both in `$TMP`, run via `SAP(action="rfc", op "r
 Check states with:
 
 ```sh
-for n in 2143 2145 2147 2149 2151 2141 2152 2153 2154 1964 2014; do gh pr view $n --repo abaplint/transpiler --json number,state,mergeable,reviewDecision --jq '"#\(.number) \(.state) \(.mergeable) \(.reviewDecision)"'; done
+for n in 2143 2145 2147 2149 2151 2141 2152 2153 2154 2155 1964 2014; do gh pr view $n --repo abaplint/transpiler --json number,state,mergeable,reviewDecision --jq '"#\(.number) \(.state) \(.mergeable) \(.reviewDecision)"'; done
 ```
 
 ### Our PRs
@@ -208,13 +208,13 @@ Fix notes:
 | #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) - **PR #2154** open (`sort-empty-key`), SAP-verified (`ZTRANSP_2140`) |
 | #419, then #427 (separate PRs; same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
 | #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
-| #1939 int8 -> string/c | `types/character.ts`, `types/string.ts`, test in `test/types/integer8.ts` (near the top, not at the end) | none in practice: trial merge (`git merge-tree`) clean with #2143/#2145/#2149/#2151; #1955 already conflicts with main in 4 other files, ours adds none. Fixed on local branch `int8-to-text-sign` (4cc8a8ef), SAP-verified (`ZTRANSP_1939`), not pushed; PR text in scratchpad `pr1939.md` |
+| #1939 int8 -> string/c | `types/character.ts`, `types/string.ts`, test in `test/types/integer8.ts` (near the top, not at the end) | none in practice: trial merge (`git merge-tree`) clean with #2143/#2145/#2149/#2151; #1955 already conflicts with main in 4 other files, ours adds none. **PR #2155** open (`int8-to-text-sign`), SAP-verified (`ZTRANSP_1939`) |
 | #2139 AS TEXT | runtime `sort.ts` (free), transpiler `sort.ts` + `for_groups.ts` | low: #2080 changes one `findVariable` line in each |
 | #2136 | `statements/assign.ts` | our #2141 - stack on it or wait |
 | Numbers -> n | `types/numc.ts` | our #2143/#2145, #1955 - wait |
 | #2042 + F2 | `types/integer8.ts`, operators | #1964, #2014, #2013, #1962, #1955 - wait |
 
-Order: #420 (PR #2152), #419 (PR #2153), #2140 (PR #2154), then #1939, #2139; #2136 after #2141.
+Order: #420 (PR #2152), #419 (PR #2153), #2140 (PR #2154), #1939 (PR #2155), then #2139; #2136 after #2141.
 
 **#427 waits until the #419 PR (#2153) is merged.** Both change `Structure.set` in
 `types/structure.ts` (#427 cases 3-4 are in `setCharacter`, next to the #419 fragment move).
@@ -229,8 +229,8 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 ## Next
 
 1. Plan item 5: comment on #1964 (SAP 816 results; offer rebase onto #2041 and ABAP tests).
-2. Plan item 6: #1939 sign placement (int8 -> string/c) - fixed locally, branch
-   `int8-to-text-sign`, not pushed.
+2. Plan item 6: #1939 sign placement (int8 -> string/c) -> PR #2155.
+
 3. Plan item 7: #2042 overflow, after #2014's direction is settled.
 4. Decide on "Numbers -> n" above.
 5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
