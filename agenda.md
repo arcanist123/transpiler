@@ -230,7 +230,6 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 
 1. Plan item 5: comment on #1964 (SAP 816 results; offer rebase onto #2041 and ABAP tests).
 2. Plan item 6: #1939 sign placement (int8 -> string/c) -> PR #2155.
-
 3. Plan item 7: #2042 overflow, after #2014's direction is settled.
 4. Decide on "Numbers -> n" above.
 5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
