@@ -169,12 +169,37 @@ gh issue list --repo abaplint/transpiler --author arcanist123 --state open --jso
 | #2136 | 2026-11-19 | ASSIGN with offset/length gives a copy, writes do not reach the data object | follow-up announced in #2137; also unblocks ASSIGN INCREMENT on partial components |
 | #2139 | 2026-11-19 | AS TEXT: SORT ignores it, FOR GROUPS / LOOP AT GROUP BY throw a todo | GROUP BY landed in #2138 - re-check what is left |
 | #2140 | 2026-11-19 | SORT of a table WITH EMPTY KEY sorts rows; SAP keeps order | |
-| #427 | 2021-05-26 | runtime assignment should throw an error instead of breaking | 2021 issue: re-test on current main + SAP; close with a comment if already fixed |
-| #420 | 2021-05-23 | SHIFT in byte mode should raise for a dynamic type | 2021 issue: re-test first |
-| #419 | 2021-05-23 | structure move does not transfer all components | 2021 issue: re-test first |
+| #419 | 2021-05-23 | structure move does not transfer all components | still broken, see re-test below |
+| #420 | 2021-05-23 | SHIFT in byte mode should raise for a dynamic type | still broken, see re-test below |
+| #427 | 2021-05-26 | runtime assignment should throw an error instead of breaking | still broken, see re-test below |
 
-Order: re-test the three 2021 issues first (cheap, may just need closing), then #2136,
-#2140, #2139.
+#### 2021 issues re-tested 2026-11-19
+
+Transpiler: upstream/main `73f2dcfe`. SAP: A4H 816, report `ZTRANSP_2021` in `$TMP`
+(cases 1-5), run via `SAP(action="rfc", op "run")`. All three still reproduce, none
+can be closed. No PR mentions them, and the runtime raises none of the SAP error names below yet.
+
+| Issue | Case | SAP 816 | Transpiler (main) |
+|---|---|---|---|
+| #419 | 1: `MOVE` c10 struct `'asdasd'` to struct of 2 x c5 | `a = 'asdas'`, `b = 'd'` (flat char structs moved as one c field) | `a = 'asdas'`, `b` blank: component-wise move, truncated |
+| #420 | 2: `SHIFT <any -> string> BY 1 PLACES LEFT IN BYTE MODE` | dump `OBJECTS_NOT_BYTELIKE` | no error, `lv_temp = 'c'` |
+| #420 | static `SHIFT lv_string ... IN BYTE MODE` | syntax error | `check_syntax, Target not hex like` (already fine, abaplint) |
+| #427 | 3: `MOVE i TO <any -> struct>` | dump `UC_OBJECTS_NOT_CONVERTIBLE` | JS `TypeError this.value[key].getLength is not a function` |
+| #427 | 4: `MOVE string TO <any -> struct>` | dump `UC_OBJECTS_NOT_CONVERTIBLE` | same JS TypeError |
+| #427 | 5: `WRITE <any -> ref to class>` | dump `OBJECTS_NOT_CHARCONV` | JS `TypeError Cannot read properties of undefined (reading 'toString')` |
+
+Fix notes:
+- **#419** is the smallest and most visible: when both structures are flat and
+  character-like but not compatible, move them as one char field (concatenate the source,
+  cut it into the target components). Check what SAP does with non-char components
+  (Unicode fragment views) before widening the rule.
+- **#427** - three different runtime errors; one PR in the structure/ref `set()` paths
+  plus `WRITE`. Comment on the issue with the dump names first.
+- **#420** - raise `OBJECTS_NOT_BYTELIKE` in `SHIFT ... IN BYTE MODE` when the target is
+  not `x`/`xstring`. (Today it treats the text as hex, so 1 byte = 2 characters and
+  `'abc'` becomes `'c'`.)
+
+Order: #419, #427, #420 (2021), then #2136, #2140, #2139.
 
 ### Closed
 
@@ -186,4 +211,5 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 2. Plan item 6: #1939 sign placement (int8 -> string/c).
 3. Plan item 7: #2042 overflow, after #2014's direction is settled.
 4. Decide on "Numbers -> n" above.
-5. Work through "Open, no PR yet" (goal: close all our issues).
+5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
+   re-tested 2026-11-19 and all still reproduce: start with #419.
