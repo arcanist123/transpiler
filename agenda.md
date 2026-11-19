@@ -142,9 +142,48 @@ Cause: `Numc.set` uses `Math.trunc( )` and keeps the sign; `p` arrives as a doub
 `get()`, `decfloat34` as text with a decimal comma.
 </details>
 
+## Goal: close all our issues
+
+All issues authored by arcanist123 on abaplint/transpiler (36 total, checked 2026-11-19).
+Re-check with:
+
+```sh
+gh issue list --repo abaplint/transpiler --author arcanist123 --state open --json number,title --jq '.[]|"#\(.number) \(.title)"'
+```
+
+### Open, PR pending - closes on merge
+
+| Issue | PR |
+|---|---|
+| #417 assign does not respect type of target field symbol | #2141 |
+| #2142 int8 to n: runtime error | #2143 |
+| #2144 text to n loses digits above 2^53 | #2145 |
+| #2146 nmax/nmin with int8 above 2^53 | #2147 |
+| #2148 int8 compared with x | #2149 |
+| #2150 VALUE literal above 2^53 | #2151 |
+
+### Open, no PR yet - need a fix
+
+| Issue | Opened | Topic | First step |
+|---|---|---|---|
+| #2136 | 2026-11-19 | ASSIGN with offset/length gives a copy, writes do not reach the data object | follow-up announced in #2137; also unblocks ASSIGN INCREMENT on partial components |
+| #2139 | 2026-11-19 | AS TEXT: SORT ignores it, FOR GROUPS / LOOP AT GROUP BY throw a todo | GROUP BY landed in #2138 - re-check what is left |
+| #2140 | 2026-11-19 | SORT of a table WITH EMPTY KEY sorts rows; SAP keeps order | |
+| #427 | 2021-05-26 | runtime assignment should throw an error instead of breaking | 2021 issue: re-test on current main + SAP; close with a comment if already fixed |
+| #420 | 2021-05-23 | SHIFT in byte mode should raise for a dynamic type | 2021 issue: re-test first |
+| #419 | 2021-05-23 | structure move does not transfer all components | 2021 issue: re-test first |
+
+Order: re-test the three 2021 issues first (cheap, may just need closing), then #2136,
+#2140, #2139.
+
+### Closed
+
+The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
+
 ## Next
 
 1. Plan item 5: comment on #1964 (SAP 816 results; offer rebase onto #2041 and ABAP tests).
 2. Plan item 6: #1939 sign placement (int8 -> string/c).
 3. Plan item 7: #2042 overflow, after #2014's direction is settled.
 4. Decide on "Numbers -> n" above.
+5. Work through "Open, no PR yet" (goal: close all our issues).
