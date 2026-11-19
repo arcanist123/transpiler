@@ -203,7 +203,8 @@ Fix notes:
 
 | Fix | Files | Conflict |
 |---|---|---|
-| #420 | `runtime/src/statements/shift.ts` | none - fixed on local branch `shift-byte-mode-not-bytelike` (e8549395), SAP-verified (`ZTRANSP_420` cases 1-5), not pushed yet |
+| #420 | `runtime/src/statements/shift.ts` | none - **PR #2152** open (`shift-byte-mode-not-bytelike`), SAP-verified (`ZTRANSP_420`) |
+| #419 | `runtime/src/types/structure.ts` `set` | none - fixed on local branch `structure-move-char-fragments` (6a4fa007), SAP-verified (`ZTRANSP_419`, test snippet `ZTRANSP_419T`), perf suite flat; PR text in scratchpad `pr419.md`; not pushed. Gap: raw non-digits into `n` inside a fragment (needs `numc.ts`, after #2143/#2145) |
 | #2140 | `runtime/src/statements/sort.ts` | none (#2086/#2088/#2089 are insert/append) |
 | #419 + #427 (one PR, same function) | `runtime/src/types/structure.ts` `set`/`setCharacter` (l. 115-163) | none; #1955 only edits `getOffset` (~l. 190) |
 | #427 case 5 | `runtime/src/statements/write.ts` | none; #2122 edits the transpiler's `write.ts` |
