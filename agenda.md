@@ -80,6 +80,7 @@ for n in 2143 2145 2147 2149 2151 2141 2152 2153 2154 2155 1964 2014; do gh pr v
 | F9 int8 vs x (crash + wrong `=`/`<`/`>`) | #2148 | #2149 | `int8-compare-hex` | open, mergeable, CI green (1 running) | |
 | F10 VALUE literal above 2^53 (int8 and p) | #2150 | #2151 | `int8-value-literal` | open, mergeable, CI green (1 running) | transpiler side, changes generated code for large literals only |
 | ASSIGN COMPONENT type check (#417) | - | #2141 | `fix-assign-component-type` | open, mergeable | not int8, listed to keep track |
+| class constructors at first use | #1849 | #2201 | `class-constructor-first-use` | opened 2026-11-20 | approved by larshp in #1849; stacked on #2162 (dynamic call of local class), the dynamic-call test needs it |
 
 ### What to watch while they merge
 
@@ -161,6 +162,7 @@ gh issue list --repo abaplint/transpiler --author arcanist123 --state open --jso
 | #2146 nmax/nmin with int8 above 2^53 | #2147 |
 | #2148 int8 compared with x | #2149 |
 | #2150 VALUE literal above 2^53 | #2151 |
+| #1849 class constructor runs too early | #2201 (needs #2162) |
 
 ### Open, no PR yet - need a fix
 
