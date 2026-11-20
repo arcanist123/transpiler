@@ -112,6 +112,8 @@ for n in 2143 2145 2147 2149 2151 2141 2152 2153 2154 2155 1964 2014; do gh pr v
    `0000000004`). Fixed and tested in local commit `2a68dbdb` on branch `numeric-to-numc`
    (not pushed). Issue text ready in scratchpad `issue_b.md` (copy below if lost). Opening it
    was blocked by the permission check - decide whether to file.
+   2026-11-20: now tracked upstream as #2175 (p) + comment there for i, f, decfloat34,
+   arithmetic results and p above 2^53 -> the local fix can go as the PR for #2175.
 2. **int8 vs xstring comparison** - not covered by #2149, SAP behaviour not checked.
 3. **x longer than 8 bytes vs int8** - depends on #1963 / #1964.
 4. **8-byte hex through `parse( )`** - `Math.pow` two's complement loses sign and
@@ -237,3 +239,6 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
    re-tested 2026-11-19 and all still reproduce. #420 -> PR #2152; #419 -> PR #2153;
    #427 after #2153 is merged; #2140 -> PR #2154.
+6. Type n coverage (2026-11-20): tests PR #2208 (probe ZTRANSP_NUMC, ZTRANSP_NUMC_T on A4H).
+   New issues #2202 text->n, #2203 compare, #2204 x<->n, #2205 offset write, #2206 blanks
+   (SHIFT/TRANSLATE), #2207 ALPHA = OUT; comments on #2175, #2167, #2189, #2192, #2176.
