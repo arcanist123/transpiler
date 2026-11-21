@@ -301,6 +301,48 @@ Left out / follow-ups: OVERLAY into n goes through OffsetLength (#2205); n `'  1
 Order: #2207 (independent) now; after #2214 merges: #2175/#2213, #2206, #2205
 (all `numc.ts`, #2205 needs the #2206 setter); #2204 last.
 
+## MOVE-CORRESPONDING / CORRESPONDING (reviewed 2026-11-21)
+
+Code: transpiler `statements/move_corresponding.ts` (passes Source + SimpleTarget only, drops
+EXACT / KEEPING TARGET LINES / EXPANDING NESTED TABLES), `expressions/corresponding_body.ts`
+(handles Source, BASE, MAPPING; anything else -> `CorrespondingBodyTranspiler, todo`), runtime
+`statements/move_corresponding.ts` (structures only, recurses when the target component is a
+Structure, else `set`).
+
+Probes on A4H in `$TMP`: `ZTRANSP_CORR` (50 cases, `P_CASE` 0 = all except the dump case 6),
+`ZTRANSP_CORR2` (cross-level MAPPING, self MAPPING, l06 sub structure MAPPING), `ZTRANSP_CORR3`
+(CL_ABAP_CORRESPONDING), exact test snippets `ZTRANSP_CORR_T` + `ZTRANSP_CORR_T2` (self MAPPING
+gives an activation warning, ImportFromFile refuses it -> WriteSource). Scratch cases + runner:
+scratchpad `corr/` (`cases.txt`, `tests.txt`, `run.js`, `gen*.js`).
+
+**PR #2228** (`corresponding-tests`): 34 tests (14 MOVE-CORRESPONDING, 20 CORRESPONDING), all
+passing on main, all matching A4H.
+
+| Finding | System | Transpiler | Tracked by |
+|---|---|---|---|
+| "curious" same-length structures: `MAPPING t = s` with sub structures c5+c10 -> c7+c8 | by component name (`[][]` no common names; `[abcde][01234567]` same names; BASE keeps others) | fragment move by position `[abcde01][23456789]` | **#2222** |
+| plain `s2 = s1` c5+c10 -> c7+c8 | fragment move `abcde01`/`23456789` | same (from #2153) | ok |
+| MOVE-CORRESPONDING / CORRESPONDING, same names c5+c10 -> c7+c8 (also nested, table rows) | by name | by name | ok, in #2228 |
+| EXCEPT, EXCEPT * (structure + table) | works | transpile error | **#2223** |
+| DEEP | works | transpile error | **#2224** |
+| DISCARDING DUPLICATES; duplicates into unique key without it | first row kept; dump ITAB_DUPLICATE_KEY | transpile error; duplicate silently skipped | **#2225** |
+| BASE with internal tables | base rows + source rows | `table, no header line` | **#2226**, likely fixed by #2076 |
+| MOVE-CORRESPONDING elementary -> sub structure of same name | assigned (`ab`) | nothing assigned | **#2227** |
+| MOVE-CORRESPONDING itab TO itab, KEEPING TARGET LINES, EXPANDING NESTED TABLES | - | `table, no header line` | open PRs #2076 (flujo-app), #2059 (NabheetCloud) - not filed |
+| CL_ABAP_CORRESPONDING (dynamic mapping table) | works (`mapping_component` for structure + table) | class not found | **open-abap/open-abap-core#1344** |
+| MAPPING across nesting levels (`MAPPING a = sub-x`) | activation warning, then dump UC_OBJECTS_NOT_CONVERTIBLE | works (gives 3) | not filed: transpiler is more permissive; hard to phrase without system output |
+| MOVE-CORRESPONDING EXACT | not probed (no CX_SY_* classes in tests) | EXACT ignored | not filed |
+
+Notes:
+- `mapping_except_component` without `srcname` had no effect in the probe - check the kind semantics
+  before implementing #1344.
+- Static MAPPING for tables works: several components, sorted target key, empty/hashed sources, as
+  method argument (`ZTRANSP_CORR` t07; not in #2228 because it needs a class).
+
+Fix order: #2227 (small, runtime), #2222 (transpiler: moveCorresponding for structured MAPPING
+pairs), #2223 EXCEPT, #2225; #2224 DEEP and #2226 after #2076 merges (reuse its table branch and
+`expandingNestedTables`).
+
 ## Done
 
 Merged as of 2026-11-21: #2141 (ASSIGN COMPONENT type), #2143 (int8 -> n), #2145 (text -> n
