@@ -250,7 +250,7 @@ before writing the test. One PR per issue.
 
 | Issue | Problem | Files | Overlap |
 |---|---|---|---|
-| #2202 | text -> n keeps only a leading number (`'12.5'` -> `00012`, `'#'` -> `00NaN`); SAP keeps every digit, drops the rest | `types/numc.ts` `set()` string branch | #1955 (imports, `getOffset`) - none |
+| #2202 **PR #2214** | text -> n keeps only a leading number (`'12.5'` -> `00012`, `'#'` -> `00NaN`); SAP keeps every digit, drops the rest | `types/numc.ts` `set()` string branch | #1955 (imports, `getOffset`) - none |
 | #2203 | n vs c / string / n of other length compared as text; SAP numeric + `CONVT_NO_NUMBER` | `compare/*` | none |
 | #2204 | x -> n gives zeros, n -> x reads digits as hex; SAP goes through i | `numc.ts`, `hex.ts` `set()` | #1964 (`hex.ts` l. 50-67) and #1955 - **check #1964's hunk first** |
 | #2205 | `lv_n(2) = 7` replaces whole field | `offset_length.ts` `set()` | #1955 (constructor parsing) - low |
@@ -267,3 +267,7 @@ above 2^53), #2147 (nmax/nmin int8), #2149 (int8 vs x), #2152 (#420 SHIFT BYTE M
 #2153 (#419 structure fragments), #2154 (#2140 SORT EMPTY KEY), #2155 (#1939 int8 sign),
 #2168 (hex -> int8, last eight bytes), #2208 (n tests).
 Still open: #2151 (VALUE literal), #2201 (class constructor, needs #2162), #2212 (f in templates).
+
+2026-11-21: #2202 -> PR #2214 (`numc-text-digits`). decfloat34 -> n rounding split out as
+#2213 (truncates, SAP rounds half away from zero; sign already dropped by #2214).
+#2151 rebased on upstream/main (test conflict in `integer8.ts`, kept both), mergeable again.
