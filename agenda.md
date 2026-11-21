@@ -242,3 +242,28 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 6. Type n coverage (2026-11-20): tests PR #2208 (probe ZTRANSP_NUMC, ZTRANSP_NUMC_T on A4H).
    New issues #2202 text->n, #2203 compare, #2204 x<->n, #2205 offset write, #2206 blanks
    (SHIFT/TRANSLATE), #2207 ALPHA = OUT; comments on #2175, #2167, #2189, #2192, #2176.
+
+## Type n issues #2202-#2207 (plan 2026-11-21)
+
+All open, no comments, not assigned. Measured on ABAP 816; re-confirm each case on A4H
+before writing the test. One PR per issue.
+
+| Issue | Problem | Files | Overlap |
+|---|---|---|---|
+| #2202 | text -> n keeps only a leading number (`'12.5'` -> `00012`, `'#'` -> `00NaN`); SAP keeps every digit, drops the rest | `types/numc.ts` `set()` string branch | #1955 (imports, `getOffset`) - none |
+| #2203 | n vs c / string / n of other length compared as text; SAP numeric + `CONVT_NO_NUMBER` | `compare/*` | none |
+| #2204 | x -> n gives zeros, n -> x reads digits as hex; SAP goes through i | `numc.ts`, `hex.ts` `set()` | #1964 (`hex.ts` l. 50-67) and #1955 - **check #1964's hunk first** |
+| #2205 | `lv_n(2) = 7` replaces whole field | `offset_length.ts` `set()` | #1955 (constructor parsing) - low |
+| #2206 | n loses blanks after SHIFT / TRANSLATE | `statements/shift.ts`, `translate.ts`, `numc.ts` raw set | none |
+| #2207 | `ALPHA = OUT` on n drops field length; all zeros -> empty | `alpha.ts` or `template_formatting.ts` l. 68-76 | #2212 other lines - low |
+
+Order: #2202, #2203, #2206, #2207, #2205, then #2204. #2202 and #2206 both touch
+`numc.ts` - do them one after the other.
+
+## Done
+
+Merged as of 2026-11-21: #2141 (ASSIGN COMPONENT type), #2143 (int8 -> n), #2145 (text -> n
+above 2^53), #2147 (nmax/nmin int8), #2149 (int8 vs x), #2152 (#420 SHIFT BYTE MODE),
+#2153 (#419 structure fragments), #2154 (#2140 SORT EMPTY KEY), #2155 (#1939 int8 sign),
+#2168 (hex -> int8, last eight bytes), #2208 (n tests).
+Still open: #2151 (VALUE literal), #2201 (class constructor, needs #2162), #2212 (f in templates).
