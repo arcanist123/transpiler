@@ -175,7 +175,7 @@ gh issue list --repo abaplint/transpiler --author arcanist123 --state open --jso
 | #2140 | 2026-11-19 | SORT of a table WITH EMPTY KEY sorts rows; SAP keeps order | |
 | #419 | 2021-05-23 | structure move does not transfer all components | still broken, see re-test below |
 | #420 | 2021-05-23 | SHIFT in byte mode should raise for a dynamic type | still broken, see re-test below |
-| #427 | 2021-05-26 | runtime assignment should throw an error instead of breaking | still broken, see re-test below |
+| ~~#427~~ | 2021-05-26 | runtime assignment should throw an error instead of breaking | **closed 2026-11-20, not planned**: replicating short dumps is out of scope |
 
 #### 2021 issues re-tested 2026-11-19
 
@@ -220,7 +220,7 @@ Fix notes:
 
 Order: #420 (PR #2152), #419 (PR #2153), #2140 (PR #2154), #1939 (PR #2155), then #2139; #2136 after #2141.
 
-**#427 waits until the #419 PR (#2153) is merged.** Both change `Structure.set` in
+**#427 closed 2026-11-20 as not planned (dump replication out of scope) - the plan below is obsolete.** ~~#427 waits until the #419 PR (#2153) is merged.~~ Both change `Structure.set` in
 `types/structure.ts` (#427 cases 3-4 are in `setCharacter`, next to the #419 fragment move).
 Start #427 from `upstream/main` once #419 is in. Case 5 (`WRITE` of a ref ->
 `OBJECTS_NOT_CHARCONV`, `statements/write.ts`) could go first on its own, but keep #427
@@ -238,7 +238,7 @@ The other 23 issues are closed (14 of them, mostly 2021, without a linked PR).
 4. Decide on "Numbers -> n" above.
 5. Work through "Open, no PR yet" (goal: close all our issues). The 2021 issues were
    re-tested 2026-11-19 and all still reproduce. #420 -> PR #2152; #419 -> PR #2153;
-   #427 after #2153 is merged; #2140 -> PR #2154.
+   #427 closed as not planned (2026-11-20); #2140 -> PR #2154.
 6. Type n coverage (2026-11-20): tests PR #2208 (probe ZTRANSP_NUMC, ZTRANSP_NUMC_T on A4H).
    New issues #2202 text->n, #2203 compare, #2204 x<->n, #2205 offset write, #2206 blanks
    (SHIFT/TRANSLATE), #2207 ALPHA = OUT; comments on #2175, #2167, #2189, #2192, #2176.
@@ -341,7 +341,8 @@ block), **transpiler matches all 12**. `CORRESPONDING #( s1-s )` into such a sub
 New gap: c5|i|c10 -> c7|i|c8 through `<any>` (first char fragment differs before a non-char
 component) dumps UC_OBJECTS_NOT_CONVERTIBLE; transpiler silently moves component-wise
 (`[abcde][42][01234567]`). `moveByFragments` returns false and `Structure.set` falls back. Fits
-#427 (assignment should raise, not break) - comment there or new issue; not filed yet.
+#427 in kind, but #427 was closed 2026-11-20 as not planned (dump replication out of scope), so not filed
+or commented. 2026-11-21: comment on #2222 posted (plain assignment already matches, fix only MAPPING).
 
 Notes:
 - `mapping_except_component` without `srcname` had no effect in the probe - check the kind semantics
