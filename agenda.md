@@ -251,14 +251,33 @@ before writing the test. One PR per issue.
 | Issue | Problem | Files | Overlap |
 |---|---|---|---|
 | #2202 **PR #2214** | text -> n keeps only a leading number (`'12.5'` -> `00012`, `'#'` -> `00NaN`); SAP keeps every digit, drops the rest | `types/numc.ts` `set()` string branch | #1955 (imports, `getOffset`) - none |
-| #2203 | n vs c / string / n of other length compared as text; SAP numeric + `CONVT_NO_NUMBER` | `compare/*` | none |
+| #2203 **PR #2216** | n vs c / string / n of other length compared as text; SAP numeric + `CONVT_NO_NUMBER` | `compare/*`, `read_table.ts`, table expressions | none |
+| #2175 + #2213 | p, i, f, decfloat34 -> n truncate and keep the sign; SAP: absolute value, rounded half away from zero | `numc.ts` number / Float / Packed / DecFloat34 branches | local `numeric-to-numc` (2a68dbdb) **conflicts with #2214** (decfloat34 branch) |
 | #2204 | x -> n gives zeros, n -> x reads digits as hex; SAP goes through i | `numc.ts`, `hex.ts` `set()` | #1964 (`hex.ts` l. 50-67) and #1955 - **check #1964's hunk first** |
 | #2205 | `lv_n(2) = 7` replaces whole field | `offset_length.ts` `set()` | #1955 (constructor parsing) - low |
 | #2206 | n loses blanks after SHIFT / TRANSLATE | `statements/shift.ts`, `translate.ts`, `numc.ts` raw set | none |
-| #2207 | `ALPHA = OUT` on n drops field length; all zeros -> empty | `alpha.ts` or `template_formatting.ts` l. 68-76 | #2212 other lines - low |
+| #2207 | `ALPHA = OUT` on n drops field length; all zeros -> empty | `alpha.ts` `alphaOut` | #2212 other lines - low |
 
-Order: #2202, #2203, #2206, #2207, #2205, then #2204. #2202 and #2206 both touch
-`numc.ts` - do them one after the other.
+Fix plan (investigated 2026-11-21, upstream/main `7e9407b5`):
+- **#2175 + #2213:** rebase `numeric-to-numc` onto `numc-text-digits`, replace #2214's
+  comma-split decfloat34 branch with the `roundToBigInt` one; one PR closes both.
+- **#2206:** `raw = true` only skips zero padding, the string branch still trims and drops
+  non-digits. Add a character-mode setter (`Numc.setCharacter(text)`: text as is, blank-padded
+  / cut to length), use it in `shift.ts` l. 86 and in `translate.ts` for n targets.
+  Probe first: CONCATENATE / REPLACE / OVERLAY / CONDENSE into n; compare and arithmetic
+  with an n holding blanks (`'123  '`).
+- **#2205:** in `OffsetLength.set()` for a Numc target, convert the source to a temporary
+  Numc of the part length (no length: field length - offset), splice, store with the
+  #2206 setter. Stack on #2206.
+- **#2207:** `alphaOut` for a Numc source: strip leading zeros, `"0"` if nothing is left,
+  pad right with blanks to `getLength()`. `c` and plain values unchanged.
+- **#2204:** `Numc.set` gets a Hex branch (hex read as integer, like x -> i, then the number
+  branch); `Hex.set` gets a Numc branch through the number path, placed after the
+  `Hex || XString` branch (away from #1964's hunk). Probe first: x > 4 bytes into n,
+  x `FFFFFFFF` into n, n > 10 digits into x.
+
+Order: #2207 (independent) now; after #2214 merges: #2175/#2213, #2206, #2205
+(all `numc.ts`, #2205 needs the #2206 setter); #2204 last.
 
 ## Done
 
