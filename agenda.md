@@ -341,8 +341,12 @@ block), **transpiler matches all 12**. `CORRESPONDING #( s1-s )` into such a sub
 New gap: c5|i|c10 -> c7|i|c8 through `<any>` (first char fragment differs before a non-char
 component) dumps UC_OBJECTS_NOT_CONVERTIBLE; transpiler silently moves component-wise
 (`[abcde][42][01234567]`). `moveByFragments` returns false and `Structure.set` falls back. Fits
-#427 in kind, but #427 was closed 2026-11-20 as not planned (dump replication out of scope), so not filed
-or commented. 2026-11-21: comment on #2222 posted (plain assignment already matches, fix only MAPPING).
+#427 in kind (closed 2026-11-20, not planned). User's rule (2026-11-21): the dump's exact shape does
+not matter, but system and transpiler must both fail or both work -> filed **#2229**. Static
+`mix3 = mix1` is a syntax error on the system, abaplint accepts it (possible abaplint/abaplint
+issue, not filed). Fix idea: in `Structure.set`, both flat + fragment views mismatch -> throw
+instead of the component-wise fallback; run the perf suite (hot path).
+2026-11-21: comment on #2222 posted (plain assignment already matches, fix only MAPPING).
 
 Notes:
 - `mapping_except_component` without `srcname` had no effect in the probe - check the kind semantics
