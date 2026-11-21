@@ -276,6 +276,12 @@ Fix plan (investigated 2026-11-21, upstream/main `7e9407b5`):
   `Hex || XString` branch (away from #1964's hunk). Probe first: x > 4 bytes into n,
   x `FFFFFFFF` into n, n > 10 digits into x.
 
+#2207 status: fixed on local branch `n-alpha-out` (06f23444), not pushed. SAP-verified with
+`ZTRANSP_2207` (exact test snippet). Wider than the issue: the rule is the same for `c`
+(field length kept, all zeros -> `0`, `'00A1'` kept) and string (text length); WIDTH
+replaces the length even when smaller (`WIDTH = 2` on `00123` -> `123`). `alphaOut` kept
+unchanged (public API), new `alphaOutTemplate`.
+
 Order: #2207 (independent) now; after #2214 merges: #2175/#2213, #2206, #2205
 (all `numc.ts`, #2205 needs the #2206 setter); #2204 last.
 
