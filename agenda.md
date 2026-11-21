@@ -333,6 +333,16 @@ passing on main, all matching A4H.
 | MAPPING across nesting levels (`MAPPING a = sub-x`) | activation warning, then dump UC_OBJECTS_NOT_CONVERTIBLE | works (gives 3) | not filed: transpiler is more permissive; hard to phrase without system output |
 | MOVE-CORRESPONDING EXACT | not probed (no CX_SY_* classes in tests) | EXACT ignored | not filed |
 
+Plain assignment of the #2222 shapes (probe `ZTRANSP_2222`, 2026-11-21): substructure to
+substructure, outer `s2 = s1` (names differ or same), MOVE, both directions, total length 15 -> 17
+and 17 -> 15, field symbols `TYPE any`, c5|i|c10 -> c5|i|c7+c3 all move by fragments (one char
+block), **transpiler matches all 12**. `CORRESPONDING #( s1-s )` into such a substructure: by name
+(`[][]`), matches. So the #2222 fix must touch only the MAPPING path.
+New gap: c5|i|c10 -> c7|i|c8 through `<any>` (first char fragment differs before a non-char
+component) dumps UC_OBJECTS_NOT_CONVERTIBLE; transpiler silently moves component-wise
+(`[abcde][42][01234567]`). `moveByFragments` returns false and `Structure.set` falls back. Fits
+#427 (assignment should raise, not break) - comment there or new issue; not filed yet.
+
 Notes:
 - `mapping_except_component` without `srcname` had no effect in the probe - check the kind semantics
   before implementing #1344.
