@@ -284,7 +284,7 @@ unchanged (public API), new `alphaOutTemplate`.
 
 2026-11-21: #2220 rebased on upstream/main (import-line conflict with #2219), mergeable again.
 
-#2206 status: fixed on local branch `n-character-blanks` (a5620966), not pushed. SAP-verified
+#2206 status: **PR #2221** (`n-character-blanks`, a5620966). SAP-verified
 (`ZTRANSP_2206` probe, test snippet `ZTRANSP_2206T` with the same ASSERTs). Not stacked on
 #2214 after all: new branches at the top of `Numc.set`, trial merge with #2214 clean.
 Scope found on SAP and included: SHIFT, TRANSLATE, REPLACE, CONCATENATE, CONDENSE store raw
