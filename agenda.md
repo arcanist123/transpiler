@@ -282,6 +282,22 @@ Fix plan (investigated 2026-11-21, upstream/main `7e9407b5`):
 replaces the length even when smaller (`WIDTH = 2` on `00123` -> `123`). `alphaOut` kept
 unchanged (public API), new `alphaOutTemplate`.
 
+2026-11-21: #2220 rebased on upstream/main (import-line conflict with #2219), mergeable again.
+
+#2206 status: fixed on local branch `n-character-blanks` (a5620966), not pushed. SAP-verified
+(`ZTRANSP_2206` probe, test snippet `ZTRANSP_2206T` with the same ASSERTs). Not stacked on
+#2214 after all: new branches at the top of `Numc.set`, trial merge with #2214 clean.
+Scope found on SAP and included: SHIFT, TRANSLATE, REPLACE, CONCATENATE, CONDENSE store raw
+text (letters too) via new `statements/_set_text.ts`; n -> n of other length is a right-aligned
+text copy (`'  123'` -> n7 `00  123`); n trailing blanks dropped in templates, into string and
+as REPLACE operand (existing `SHIFT numc` test); n with letters -> i raises
+CX_SY_CONVERSION_NO_NUMBER; transpiler `translate.ts` passes the USING mask with trailing blanks
+(`USING '0 '` was emitted as `'0'`, also wrong for c).
+Conflicts with #2220 on the `template_formatting.ts` import line (both add `Numc`) - rebase
+whichever merges second.
+Left out / follow-ups: OVERLAY into n goes through OffsetLength (#2205); n `'  123'` vs n7
+`'00  123'` gives CONVT_NO_NUMBER locally, SAP says not equal (#2216 compare logic).
+
 Order: #2207 (independent) now; after #2214 merges: #2175/#2213, #2206, #2205
 (all `numc.ts`, #2205 needs the #2206 setter); #2204 last.
 
