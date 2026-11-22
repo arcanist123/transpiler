@@ -47,6 +47,8 @@ function sizeOf(node: any): {size: number, align: number} {
     return {size: node.getLength(), align: 1};
   } else if (node instanceof Integer) {
     return {size: 4, align: 4};
+  } else if (node instanceof DecFloat16) {
+    return {size: 8, align: 8};
   } else if (node instanceof DecFloat34) {
     return {size: 16, align: 8};
   }

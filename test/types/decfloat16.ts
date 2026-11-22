@@ -222,4 +222,22 @@ START-OF-SELECTION.
     expect(await runAndGet(code)).to.equal("a 8\ne 16");
   });
 
+  it("ASSIGN INCREMENT over a decfloat16, it takes 8 bytes", async () => {
+    const code = `
+    TYPES: BEGIN OF ty,
+             a TYPE decfloat16,
+             c TYPE x LENGTH 8,
+             b TYPE decfloat16,
+           END OF ty.
+    DATA ls TYPE ty.
+    DATA lv_length TYPE i.
+    FIELD-SYMBOLS <fs> TYPE any.
+    ls-b = '1.5'.
+    ASSIGN ls-a INCREMENT 2 TO <fs> RANGE ls.
+    WRITE / |{ sy-subrc } { <fs> }|.
+    DESCRIBE FIELD ls LENGTH lv_length IN BYTE MODE.
+    WRITE / |{ lv_length }|.`;
+    expect(await runAndGet(code)).to.equal("0 1.5\n24");
+  });
+
 });
