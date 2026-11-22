@@ -80,7 +80,7 @@ open-abap/open-abap-core#1344 (CL_ABAP_CORRESPONDING missing) - open.
 | p | #2167 (above 2^53), #2171 (MOD rounds the remainder), #2172 (overflow exception class), #2174 (p to c) |
 | n | #2175 + #2213 (number to n), #2204 (x <-> n), #2205 (offset write) |
 | decfloat34 | #2177, #2178, #2179, #2180, #2181, #2182, #2183 |
-| f | #2185 (rest: ENGINEERING, EXPONENT in templates), #2188 (beyond the double range) |
+| f | #2185 (branch `f-template-engineering` pushed, PR not opened yet), #2188 (beyond the double range) |
 | b / s | #2199 |
 | CORRESPONDING | #2222, #2223, #2224, #2225, #2226, #2227 |
 | structures | #2229 |
@@ -139,6 +139,10 @@ performance suite. Static side is abaplint#4642.
 
 ### Not filed / to decide
 
+0. abaplint: `StringTemplateFormatting` allows `STYLE =` only alone; STYLE with DECIMALS,
+   WIDTH/ALIGN, and SCIENTIFIC with EXPONENT should parse (STYLE + SIGN and non-SCIENTIFIC STYLE +
+   EXPONENT are expected to be syntax errors; EXPONENT on i/p too). Probe report ZTRANSP_F_ENG.
+
 1. int8 vs xstring comparison - not covered by #2149.
 2. x longer than 8 bytes vs int8 - depends on #1964.
 3. 8-byte hex through `parse( )`: `Math.pow` two's complement loses sign and precision for
@@ -151,6 +155,7 @@ performance suite. Static side is abaplint#4642.
 
 ## Next
 
+0. Open PR from `f-template-engineering` (closes #2185).
 1. Link #2231 in #2237 so it closes on merge.
 2. #4631: wait for larshp to say how he wants it handled.
 3. #2175 + #2213 PR from `numeric-to-numc`.
