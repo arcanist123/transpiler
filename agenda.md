@@ -1,5 +1,83 @@
 # Agenda
 
+## Status 2026-11-22 (issues and PRs by arcanist123)
+
+upstream/main of transpiler at `0b618827`. Re-check with:
+
+```sh
+for r in abaplint/transpiler abaplint/abaplint; do gh pr list --repo $r --author arcanist123 --state open --json number,mergeable,mergeStateStatus,title --jq '.[]|"\(.number) \(.mergeable)/\(.mergeStateStatus) \(.title)"'; done
+```
+
+### abaplint/transpiler
+
+Issues: 39 open, 45 closed. PRs: 9 open, 35 merged since 2026-11-19.
+
+Open PRs (all CI green, no reviews yet; all mergeable, "behind" only):
+
+| PR | Branch | Closes | Notes |
+|---|---|---|---|
+| #2237 | `int8-float-operands` | (#2231, not linked) | opened 2026-11-22 |
+| #2233 | `unary-minus-operand` | #2170 | 2026-11-22 merged main in (test conflict with #2235 in `arithmetics_precedence.ts`, kept both) |
+| #2218 | `i-overflow` | #2189, #2192 | |
+| #2217 | `int-to-char-overflow` | #2193 | |
+| #2212 | `f-template-17-digits` | (#2185, not linked) | 2026-11-22 merged main in (conflict with #2219 in `template_formatting.ts`, kept both) |
+| #2209 | `f-to-p-round-half-away` | #2187 | |
+| #2201 | `class-constructor-first-use` | #1849 | 2026-11-22 merged main in (conflict with LOCAL #2072 in `form.ts` / `function_module.ts`: entry checks, then the LOCAL `try`) |
+| #2169 | `int8-overflow` | #2042 | |
+| #2151 | `int8-value-literal` | #2150 | |
+
+Merged since 2026-11-19: #2137, #2138, #2141, #2143, #2145, #2147, #2149, #2152, #2153, #2154,
+#2155, #2158, #2159, #2161, #2162, #2163, #2168, #2173, #2184, #2191, #2194, #2198, #2200, #2208,
+#2210, #2211, #2214, #2216, #2219, #2220, #2221, #2228, #2235, #2236.
+
+Issues closed since 2026-11-19: #406, #417, #419, #420, #427 (not planned), #2022, #2140, #2142,
+#2144, #2146, #2148, #2156, #2157, #2160, #2176, #2186, #2190, #2202, #2203, #2206, #2207, #2232, #2234.
+
+Open issues without a PR (31):
+
+| Area | Issues |
+|---|---|
+| ASSIGN / AS TEXT | #2136 (larshp commented), #2139 (check what is left after #2159/#2161) |
+| int8 | #2165 (`**` in f), #2166 (p vs int8), #2195 (ipow), #2196 (text with decimals), #2197 (DECIMALS in template) |
+| p | #2167 (above 2^53), #2171 (MOD), #2172 (overflow exception), #2174 (p to c) |
+| n | #2175 + #2213 (number to n, local `numeric-to-numc`), #2204 (x <-> n), #2205 (offset write) |
+| decfloat34 | #2177, #2178, #2179, #2180, #2181, #2182, #2183 |
+| f | #2188 (beyond double range) |
+| b / s | #2199 |
+| CORRESPONDING | #2222, #2223, #2224, #2225, #2226, #2227 |
+| structures | #2229 |
+
+### abaplint/abaplint
+
+Issues: 9 open, 15 closed. PRs: 9 open, 22 merged since 2026-11-19.
+
+Open PRs (all CI green, no reviews yet):
+
+| PR | Branch | Closes | State |
+|---|---|---|---|
+| #4638 | `prefix-me-attribute-call` | (#2033) | mergeable, behind |
+| #4636 | `type-me-static-arrow` | | mergeable, behind |
+| #4635 | `read-only-attribute-write` | #2097 | mergeable, behind |
+| #4633 | `type-before-definition` | #2556 | mergeable, behind |
+| #4631 | `integer-bytes` | #4630 | mergeable, behind |
+| #4629 | `alias-name-conflicts` | #2685 | **CONFLICTING** - merge main |
+| #4628 | `for-testing-in-non-test-class` | #2612 | mergeable, behind (larshp 2026-11-21: "check conflicts" - now clean) |
+| #4626 | `implement-methods-duplicates` | #3212 | mergeable, behind |
+| #4625 | `me-in-static-method` | #3560 | mergeable, behind |
+
+Merged since 2026-11-19: #4545, #4551, #4600, #4602, #4603, #4611, #4612, #4614, #4615, #4616,
+#4617, #4618, #4619, #4620, #4621, #4622, #4627, #4632, #4634, #4637, #4639, #4641.
+
+Issues closed since 2026-11-19: #1988, #4482, #4599, #4608, #4609, #4610, #4613.
+
+Open issues (no comments yet): #4630 (PR #4631); without a PR: #4642 (fragment views, see #2229),
+#4643, #4644, #4645 (DATASET), #4647 (ABAP Doc chained), #4648 (VALUE row type), #4655 (ABAP Doc
+HTML tag), #4656 (text literal to xsequence, transpiler side done in #2236).
+
+### Other repos
+
+open-abap/open-abap-core#1344 (CL_ABAP_CORRESPONDING) still open.
+
 ## int8: transpiler vs SAP (investigated 2026-11-19)
 
 Probe: report `ZTRANSP_INT8` in `$TMP` on A4H (ABAP 816), 74 probes, run on SAP via
@@ -365,7 +443,7 @@ Merged as of 2026-11-21: #2141 (ASSIGN COMPONENT type), #2143 (int8 -> n), #2145
 above 2^53), #2147 (nmax/nmin int8), #2149 (int8 vs x), #2152 (#420 SHIFT BYTE MODE),
 #2153 (#419 structure fragments), #2154 (#2140 SORT EMPTY KEY), #2155 (#1939 int8 sign),
 #2168 (hex -> int8, last eight bytes), #2208 (n tests).
-Still open: #2151 (VALUE literal), #2201 (class constructor, needs #2162), #2212 (f in templates).
+Still open as of 2026-11-22: see "Status 2026-11-22" at the top (#2162 merged 2026-11-21, so #2201 is no longer blocked).
 
 2026-11-21: #2202 -> PR #2214 (`numc-text-digits`). decfloat34 -> n rounding split out as
 #2213 (truncates, SAP rounds half away from zero; sign already dropped by #2214).
