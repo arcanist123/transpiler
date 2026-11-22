@@ -9,6 +9,14 @@ Re-check open PRs with:
 for r in abaplint/transpiler abaplint/abaplint; do gh pr list --repo $r --author arcanist123 --state open --json number,mergeable,mergeStateStatus,title --jq '.[]|"\(.number) \(.mergeable)/\(.mergeStateStatus) \(.title)"'; done
 ```
 
+## Accepted deviations
+
+- WRITE stays stdout-style: the transpiler writes straight to a console. ABAP list layout
+  isn't reproduced: output length padding, right alignment, thousands and decimal separators
+  from the user settings, and the list buffer that holds a line until it knows the next one.
+  No issues or tests for these differences. Any WRITE fix must keep this console-style
+  output working.
+
 ## Status 2026-11-22, 14:40 UTC
 
 No conflicts left (#4628 resolved 2026-11-22). Conflicts validated with a local test merge (`git merge-tree`) of every open PR branch into
@@ -149,7 +157,8 @@ performance suite. Static side is abaplint#4642.
    `x LENGTH 8` wherever a number is used (`x8` vs `i`, `p`, `f`).
 4. Conversion overflow into int8 from string, `f`, `p` (no exception today) - check what
    #2169 / #2218 leave over.
-5. `WRITE TO` sign and thousands separators (user settings dependent).
+5. `WRITE TO` sign and thousands separators (user settings dependent). A fix must not
+   break the stdout-style WRITE, see Accepted deviations.
 6. CL_ABAP_CORRESPONDING: `mapping_except_component` without `srcname` - look up the kind
    semantics before implementing open-abap-core#1344.
 
@@ -165,13 +174,37 @@ performance suite. Static side is abaplint#4642.
 
 ## decfloat16 (#963), 2026-11-22
 
-Split by topic, each `Refs #963`; probe report ZTRANSP_DF16.
-1. #2244 `decfloat16-precision`: DecFloat16 runtime type, 16 digit rounding half away from
-   zero on store, CREATE DATA TYPE ('DECFLOAT16'). Open.
-2. `decfloat16-range` (on 1): CX_SY_CONVERSION_OVERFLOW above 9.999999999999999E384,
-   subnormals to 1E-398. Open the PR after #2244 is merged; last one, use `Closes #963`.
-3. `decfloat16-describe` (on 1): DESCRIBE FIELD type `a`, 8 bytes. Open after #2244.
-   open-abap RTTI must map `a` to typekind_decfloat16 (separate repo).
-Left out: WRITE list output (output length 24, separators), DESCRIBE OUTPUT-LENGTH,
-ASSIGN CASTING size (8 bytes), ASSIGN type conflict df16 vs df34, dynamic
-CREATE DATA TYPE ('DECFLOAT34'), the decfloat34 range.
+Split by topic, each `Refs #963`; probe report ZTRANSP_DF16. larshp doesn't accept PRs that
+spread over too many topics, so each one stays narrow.
+
+PRs:
+1. #2244 `decfloat16-precision`, open:
+   - DecFloat16 runtime type, rounded to 16 digits half away from zero when stored, while
+     calculations stay in decfloat34
+   - CREATE DATA TYPE ('DECFLOAT16')
+   - ASSIGN between decfloat16 and decfloat34 field symbols is ASSIGN_TYPE_CONFLICT, both ways
+2. `decfloat16-range` (stacked on 1), pushed, open the PR after #2244 is merged:
+   - CX_SY_CONVERSION_OVERFLOW above 9.999999999999999E384, the field keeps its value
+   - subnormals down to 1E-398
+   - if this is the last one, use `Closes #963`. Note for the body: #2181 says decfloat16
+     arithmetic raises CX_SY_ARITHMETIC_OVERFLOW, but storing a decfloat34 result that is
+     too large gives CX_SY_CONVERSION_OVERFLOW.
+3. `decfloat16-describe` (stacked on 1), pushed, open after #2244:
+   - DESCRIBE FIELD type `a`, 8 bytes
+   - 8 bytes in the ASSIGN INCREMENT layout
+
+Issues filed for what the PRs leave open:
+- #2245: decfloat34 range on conversion (overflow above 9.99..E6144, subnormals to 1E-6176).
+  The arithmetic side is #2181.
+- #2246: FIELD-SYMBOLS TYPE decfloat fails, typeTodoDecFloatType.
+- #2247: CREATE DATA TYPE ('DECFLOAT34') raises CX_SY_CREATE_DATA_ERROR.
+- #2248: DESCRIBE FIELD OUTPUT-LENGTH gives the length (all types). This is only the
+  DESCRIBE value, WRITE layout stays as it is.
+- #2249: ASSIGN (name) TO a typed field symbol doesn't check the type (all types).
+- open-abap-core#1348: describe_by_data has no 'DecFloat16' branch. After #2244 is
+  released it hits ASSERT; get_decfloat16 is still a todo. Fix it once the transpiler
+  release is out.
+
+Not filed: WRITE list output of decfloat16 (output length 24, separators), an accepted
+deviation. Also already covered: sqrt( ) / ** for decfloat34 (#2177), decfloat34 to
+c/string (#2179), COLLECT (#2183).
