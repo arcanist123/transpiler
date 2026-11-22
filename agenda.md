@@ -32,11 +32,11 @@ upstream/main at `ed568c75`.
 |---|---|---|---|
 | #2252 | `xstring-byte-concatenate` | #2251 | 0 |
 | #2244 | `decfloat16-precision` | Refs #963 | 0 |
-| #2237 | `int8-float-operands` | #2231 (not linked in the PR) | 0 |
+| #2237 | `int8-float-operands` | #2231 (the rows with an f operand) | 0 |
 | #2218 | `i-overflow` | #2189, #2192 | 2 |
 | #2209 | `f-to-p-round-half-away` | #2187 | 1 |
 | #2201 | `class-constructor-first-use` | #1849 | 8 |
-| #2169 | `int8-overflow` | #2042 | 0 |
+| #2169 | `int8-overflow` | #2042, #2231 (last row: int8 / int8 into f) | 0 |
 | #2151 | `int8-value-literal` | #2150 | 1 |
 
 Stacked on #2244, pushed, no PR yet: `decfloat16-range`, `decfloat16-describe` (both test-merge clean).
@@ -161,14 +161,13 @@ performance suite. Static side is abaplint#4642.
 
 ## Next
 
-1. Link #2231 in #2237 so it closes on merge.
-2. #4631: wait for larshp to say how he wants it handled.
-3. #2242: reopen #2243 or replace it.
-4. #2175 + #2213 PR from `numeric-to-numc`.
-5. #2227, then #2222 (CORRESPONDING).
-6. #2205, #2204 (n).
-7. #2136, #2139.
-8. #2229.
+1. #4631: wait for larshp to say how he wants it handled.
+2. #2242: reopen #2243 or replace it.
+3. #2175 + #2213 PR from `numeric-to-numc`.
+4. #2227, then #2222 (CORRESPONDING).
+5. #2205, #2204 (n).
+6. #2136, #2139.
+7. #2229.
 
 ## decfloat16 (#963), 2026-11-22
 
