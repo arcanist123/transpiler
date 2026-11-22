@@ -32,7 +32,7 @@ Open PRs - CI green, no reviews or comments; test merge clean for all:
 | #2151 | `int8-value-literal` | #2150 | 11 |
 
 Merged 2026-11-22: #2210, #2214, #2221, #2228, #2233 (closed #2170), #2235, #2236, #2212.
-**#2212 did not close #2185** (not linked) - close #2185 with a pointer to #2212.
+#2212 was only part of #2185 (plain text of f); ENGINEERING and EXPONENT for f are still open, so #2185 stays open.
 
 Other people's PRs we depend on:
 
@@ -71,7 +71,7 @@ open-abap/open-abap-core#1344 (CL_ABAP_CORRESPONDING missing) - open.
 
 ## Goal: close all our transpiler issues
 
-31 open issues need a fix and have no PR (plus #2185, fixed by #2212, to close).
+32 open issues need a fix and have no PR.
 
 | Area | Issues |
 |---|---|
@@ -80,7 +80,7 @@ open-abap/open-abap-core#1344 (CL_ABAP_CORRESPONDING missing) - open.
 | p | #2167 (above 2^53), #2171 (MOD rounds the remainder), #2172 (overflow exception class), #2174 (p to c) |
 | n | #2175 + #2213 (number to n), #2204 (x <-> n), #2205 (offset write) |
 | decfloat34 | #2177, #2178, #2179, #2180, #2181, #2182, #2183 |
-| f | #2188 (beyond the double range) |
+| f | #2185 (rest: ENGINEERING, EXPONENT in templates), #2188 (beyond the double range) |
 | b / s | #2199 |
 | CORRESPONDING | #2222, #2223, #2224, #2225, #2226, #2227 |
 | structures | #2229 |
@@ -151,8 +151,8 @@ performance suite. Static side is abaplint#4642.
 
 ## Next
 
-1. Close #2185 (fixed by #2212); link #2231 in #2237 so it closes on merge.
-2. Answer larshp on #4631 once he says what he prefers.
+1. Link #2231 in #2237 so it closes on merge.
+2. #4631: wait for larshp to say how he wants it handled.
 3. #2175 + #2213 PR from `numeric-to-numc`.
 4. #2227, then #2222 (CORRESPONDING).
 5. #2205, #2204 (n).
