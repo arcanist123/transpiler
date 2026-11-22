@@ -49,7 +49,7 @@ Issues by us: 9 open, 15 closed. PRs: 9 open, 22 merged since 2026-11-19.
 | #4635 | `read-only-attribute-write` | #2097 | mergeable, behind |
 | #4633 | `type-before-definition` | #2556 | mergeable, behind |
 | #4631 | `integer-bytes` | #4630 | mergeable, behind |
-| #4629 | `alias-name-conflicts` | #2685 | **conflicting** - merge main |
+| #4629 | `alias-name-conflicts` | #2685 | mergeable (main merged in 2026-11-22, import-line conflict with #4649) |
 | #4628 | `for-testing-in-non-test-class` | #2612 | mergeable (larshp asked to check conflicts 2026-11-21, clean now) |
 | #4626 | `implement-methods-duplicates` | #3212 | mergeable, behind |
 | #4625 | `me-in-static-method` | #3560 | mergeable, behind |
@@ -145,7 +145,7 @@ performance suite. Static side is abaplint#4642.
 
 ## Next
 
-1. abaplint #4629: merge main, resolve the conflict.
+1. ~~abaplint #4629: merge main, resolve the conflict.~~ Done 2026-11-22.
 2. Link #2185 in #2212 and #2231 in #2237 so the issues close on merge.
 3. #2175 + #2213 PR from `numeric-to-numc`.
 4. #2227, then #2222 (CORRESPONDING).
