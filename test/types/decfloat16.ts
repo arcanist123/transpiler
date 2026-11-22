@@ -209,4 +209,72 @@ START-OF-SELECTION.
     });
   }
 
+  it("the largest and smallest decfloat16", async () => {
+    const code = `
+    DATA lv TYPE decfloat16.
+    DATA lt_in TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
+    DATA lv_in TYPE string.
+    APPEND |1E384| TO lt_in.
+    APPEND |9.999999999999999E384| TO lt_in.
+    APPEND |-9.999999999999999E384| TO lt_in.
+    APPEND |1E-383| TO lt_in.
+    APPEND |5E-399| TO lt_in.
+    APPEND |4.9E-399| TO lt_in.
+    APPEND |2.5E-398| TO lt_in.
+    APPEND |-5E-399| TO lt_in.
+    APPEND |1.2345678901234567E-395| TO lt_in.
+    LOOP AT lt_in INTO lv_in.
+      lv = lv_in.
+      WRITE / |{ lv }|.
+    ENDLOOP.`;
+    const zeros = (n: number) => "0".repeat(n);
+    expect(await runAndGet(code)).to.equal([
+      "1" + zeros(384),
+      "9999999999999999" + zeros(369),
+      "-9999999999999999" + zeros(369),
+      "0." + zeros(382) + "1",
+      "0." + zeros(397) + "1",
+      "0",
+      "0." + zeros(397) + "3",
+      "-0." + zeros(397) + "1",
+      "0." + zeros(394) + "1235"].join("\n"));
+  });
+
+  it("a result below the smallest decfloat16 is rounded", async () => {
+    const code = `
+    DATA lv TYPE decfloat16.
+    DATA lv_a TYPE decfloat16.
+    lv_a = |1E-200|.
+    lv = lv_a * lv_a.
+    WRITE / |{ lv }|.
+    lv_a = |1E-383|.
+    lv = lv_a / 10000.
+    WRITE / |{ lv }|.`;
+    expect(await runAndGet(code)).to.equal("0\n0." + "0".repeat(386) + "1");
+  });
+
+  for (const overflow of [
+    {name: "text above the largest decfloat16", code: "lv = |1E385|."},
+    {name: "text rounded above the largest decfloat16", code: "lv = |9.9999999999999995E384|."},
+    {name: "a decfloat34 below the smallest negative decfloat16", code: "lv_34 = |-1E400|. lv = lv_34."},
+    {name: "a product above the largest decfloat16", code: "lv_a = |1E300|. lv = lv_a * lv_a."},
+    {name: "MULTIPLY above the largest decfloat16", code: "lv = |1E200|. lv_a = lv. MULTIPLY lv BY lv_a."},
+    {name: "CONV decfloat16 above the largest decfloat16", code: "lv_34 = |1E400|. lv = CONV decfloat16( lv_34 )."},
+  ]) {
+    it("overflow, " + overflow.name, async () => {
+      const code = `
+    DATA lv TYPE decfloat16.
+    DATA lv_a TYPE decfloat16.
+    DATA lv_34 TYPE decfloat34.
+    ${overflow.code}
+    WRITE / 'not expected'.`;
+      try {
+        await runAndGet(code);
+        expect.fail();
+      } catch (e) {
+        expect(e.toString()).to.contain("CX_SY_CONVERSION_OVERFLOW");
+      }
+    });
+  }
+
 });
