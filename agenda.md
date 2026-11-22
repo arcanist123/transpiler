@@ -162,3 +162,16 @@ performance suite. Static side is abaplint#4642.
 5. #2205, #2204 (n).
 6. #2136, #2139.
 7. #2229.
+
+## decfloat16 (#963), 2026-11-22
+
+Split by topic, each `Refs #963`; probe report ZTRANSP_DF16.
+1. #2244 `decfloat16-precision`: DecFloat16 runtime type, 16 digit rounding half away from
+   zero on store, CREATE DATA TYPE ('DECFLOAT16'). Open.
+2. `decfloat16-range` (on 1): CX_SY_CONVERSION_OVERFLOW above 9.999999999999999E384,
+   subnormals to 1E-398. Open the PR after #2244 is merged; last one, use `Closes #963`.
+3. `decfloat16-describe` (on 1): DESCRIBE FIELD type `a`, 8 bytes. Open after #2244.
+   open-abap RTTI must map `a` to typekind_decfloat16 (separate repo).
+Left out: WRITE list output (output length 24, separators), DESCRIBE OUTPUT-LENGTH,
+ASSIGN CASTING size (8 bytes), ASSIGN type conflict df16 vs df34, dynamic
+CREATE DATA TYPE ('DECFLOAT34'), the decfloat34 range.
