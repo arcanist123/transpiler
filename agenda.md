@@ -9,26 +9,30 @@ Re-check open PRs with:
 for r in abaplint/transpiler abaplint/abaplint; do gh pr list --repo $r --author arcanist123 --state open --json number,mergeable,mergeStateStatus,title --jq '.[]|"\(.number) \(.mergeable)/\(.mergeStateStatus) \(.title)"'; done
 ```
 
-## Status 2026-11-22
+## Status 2026-11-22, 14:40 UTC
+
+No conflicts left (#4628 resolved 2026-11-22). Conflicts validated with a local test merge (`git merge-tree`) of every open PR branch into
+the newest upstream main, not only GitHub's flag.
 
 ### abaplint/transpiler
 
-Issues by us: 39 open, 45 closed. PRs: 9 open, 34 merged since 2026-11-19.
-upstream/main at `0b618827`.
+Issues by us: 38 open, 46 closed. PRs: 7 open, 36 merged since 2026-11-19.
+upstream/main at `2c4ef6f9`.
 
-Open PRs - CI green, no reviews yet, all mergeable ("behind" only):
+Open PRs - CI green, no reviews or comments; test merge clean for all:
 
-| PR | Branch | Closes | Notes |
+| PR | Branch | Closes | Behind main |
 |---|---|---|---|
-| #2237 | `int8-float-operands` | #2231 (not linked in the PR) | |
-| #2233 | `unary-minus-operand` | #2170 | main merged in 2026-11-22 (test conflict with #2235, kept both) |
-| #2218 | `i-overflow` | #2189, #2192 | |
-| #2217 | `int-to-char-overflow` | #2193 | |
-| #2212 | `f-template-17-digits` | #2185 (not linked in the PR) | main merged in 2026-11-22 (conflict with #2219 in `template_formatting.ts`) |
-| #2209 | `f-to-p-round-half-away` | #2187 | |
-| #2201 | `class-constructor-first-use` | #1849 | main merged in 2026-11-22 (conflict with LOCAL #2072 in `form.ts`, `function_module.ts`: entry checks first, then the LOCAL `try`) |
-| #2169 | `int8-overflow` | #2042 | |
-| #2151 | `int8-value-literal` | #2150 | |
+| #2237 | `int8-float-operands` | #2231 (not linked in the PR) | 7 |
+| #2218 | `i-overflow` | #2189, #2192 | 13 |
+| #2217 | `int-to-char-overflow` | #2193 | 12 |
+| #2209 | `f-to-p-round-half-away` | #2187 | 14 |
+| #2201 | `class-constructor-first-use` | #1849 | 3 (main merged in 2026-11-22, LOCAL #2072 conflict) |
+| #2169 | `int8-overflow` | #2042 | 14 |
+| #2151 | `int8-value-literal` | #2150 | 11 |
+
+Merged 2026-11-22: #2210, #2214, #2221, #2228, #2233 (closed #2170), #2235, #2236, #2212.
+**#2212 did not close #2185** (not linked) - close #2185 with a pointer to #2212.
 
 Other people's PRs we depend on:
 
@@ -40,24 +44,26 @@ Other people's PRs we depend on:
 
 ### abaplint/abaplint
 
-Issues by us: 9 open, 15 closed. PRs: 9 open, 22 merged since 2026-11-19.
+Issues by us: 9 open, 15 closed. PRs: 7 open, 24 merged since 2026-11-19.
+upstream/main at `6a069fee2`.
 
-| PR | Branch | Closes | State |
-|---|---|---|---|
-| #4638 | `prefix-me-attribute-call` | (#2033) | mergeable, behind |
-| #4636 | `type-me-static-arrow` | | mergeable, behind |
-| #4635 | `read-only-attribute-write` | #2097 | mergeable, behind |
-| #4633 | `type-before-definition` | #2556 | mergeable, behind |
-| #4631 | `integer-bytes` | #4630 | mergeable, behind |
-| #4629 | `alias-name-conflicts` | #2685 | mergeable (main merged in 2026-11-22, import-line conflict with #4649) |
-| #4628 | `for-testing-in-non-test-class` | #2612 | mergeable (larshp asked to check conflicts 2026-11-21, clean now) |
-| #4626 | `implement-methods-duplicates` | #3212 | mergeable, behind |
-| #4625 | `me-in-static-method` | #3560 | mergeable, behind |
+| PR | Branch | Closes | Test merge | Notes |
+|---|---|---|---|---|
+| #4638 | `prefix-me-attribute-call` | (#2033) | clean, 11 behind | |
+| #4636 | `type-me-static-arrow` | | clean, 11 behind | |
+| #4635 | `read-only-attribute-write` | #2097 | clean, 11 behind | |
+| #4633 | `type-before-definition` | #2556 | clean, 11 behind | |
+| #4631 | `integer-bytes` | #4630 | clean, 1 behind | larshp 14:28 "hmm"; we asked whether he prefers another approach - **waiting for his answer** |
+| #4628 | `for-testing-in-non-test-class` | #2612 | clean (main merged in 2026-11-22) | conflict was `test/abap/syntax/syntax.ts`: our #4625 appended tests at the same spot - kept both |
+| #4626 | `implement-methods-duplicates` | #3212 | clean, 13 behind | |
 
-Open issues without a PR: #4642 (flat structures with non-matching fragment views accepted,
-see transpiler #2229), #4643, #4644, #4645 (DATASET statements), #4647 (ABAP Doc before a
-chained statement), #4648 (VALUE row of another numeric type), #4655 (ABAP Doc HTML tag),
-#4656 (text literal to an xsequence parameter; transpiler side done in #2236).
+Merged 2026-11-22: #4634, #4639, #4641, #4629, #4625.
+
+Open issues, no comments: #4630 (PR #4631); without a PR: #4642 (flat structures with
+non-matching fragment views accepted, see transpiler #2229), #4643, #4644, #4645 (DATASET
+statements), #4647 (ABAP Doc before a chained statement), #4648 (VALUE row of another numeric
+type), #4655 (ABAP Doc HTML tag), #4656 (text literal to an xsequence parameter; transpiler side
+done in #2236).
 
 ### Other repos
 
@@ -65,7 +71,7 @@ open-abap/open-abap-core#1344 (CL_ABAP_CORRESPONDING missing) - open.
 
 ## Goal: close all our transpiler issues
 
-31 open issues have no PR yet.
+31 open issues need a fix and have no PR (plus #2185, fixed by #2212, to close).
 
 | Area | Issues |
 |---|---|
@@ -145,8 +151,8 @@ performance suite. Static side is abaplint#4642.
 
 ## Next
 
-1. ~~abaplint #4629: merge main, resolve the conflict.~~ Done 2026-11-22.
-2. Link #2185 in #2212 and #2231 in #2237 so the issues close on merge.
+1. Close #2185 (fixed by #2212); link #2231 in #2237 so it closes on merge.
+2. Answer larshp on #4631 once he says what he prefers.
 3. #2175 + #2213 PR from `numeric-to-numc`.
 4. #2227, then #2222 (CORRESPONDING).
 5. #2205, #2204 (n).
