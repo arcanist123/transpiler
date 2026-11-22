@@ -209,4 +209,17 @@ START-OF-SELECTION.
     });
   }
 
+  it("DESCRIBE FIELD TYPE and LENGTH of a decfloat16", async () => {
+    const code = `
+    DATA lv TYPE decfloat16.
+    DATA lv_34 TYPE decfloat34.
+    DATA lv_type TYPE c LENGTH 1.
+    DATA lv_length TYPE i.
+    DESCRIBE FIELD lv TYPE lv_type LENGTH lv_length IN BYTE MODE.
+    WRITE / |{ lv_type } { lv_length }|.
+    DESCRIBE FIELD lv_34 TYPE lv_type LENGTH lv_length IN BYTE MODE.
+    WRITE / |{ lv_type } { lv_length }|.`;
+    expect(await runAndGet(code)).to.equal("a 8\ne 16");
+  });
+
 });

@@ -1,4 +1,4 @@
-import {Character, String, FieldSymbol, Hex, Table, ABAPObject, Structure, DataReference, Integer, Float, Numc, XString, Packed, Time, Date, DecFloat34, HashedTable, Integer8, HexUInt8, UTCLong} from "../types";
+import {Character, String, FieldSymbol, Hex, Table, ABAPObject, Structure, DataReference, Integer, Float, Numc, XString, Packed, Time, Date, DecFloat34, DecFloat16, HashedTable, Integer8, HexUInt8, UTCLong} from "../types";
 import {ICharacter} from "../types/_character";
 import {INumeric} from "../types/_numeric";
 import {ABAP} from "..";
@@ -45,6 +45,8 @@ function byteLength(field: any): {length: number, align: number} {
   } else if (field instanceof Integer) {
     return {length: 4, align: 4};
   } else if (field instanceof Integer8 || field instanceof Float || field instanceof UTCLong) {
+    return {length: 8, align: 8};
+  } else if (field instanceof DecFloat16) {
     return {length: 8, align: 8};
   } else if (field instanceof DecFloat34) {
     return {length: 16, align: 16};
@@ -104,6 +106,8 @@ export function describe(input: IDescribeOptions) {
       input.type.set("y");
     } else if (input.field instanceof UTCLong) {
       input.type.set("p");
+    } else if (input.field instanceof DecFloat16) {
+      input.type.set("a");
     } else if (input.field instanceof DecFloat34) {
       input.type.set("e");
     } else if (input.field instanceof Structure) {
